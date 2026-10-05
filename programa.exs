@@ -1,3 +1,4 @@
+# Autores: Juan Camilo, Jhonatan, Esteban
 defmodule Programa do
   @moduledoc """
   Punto de entrada principal. Orquesta los módulos y maneja la consola.
