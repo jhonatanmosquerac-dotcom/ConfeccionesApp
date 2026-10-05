@@ -77,7 +77,7 @@ defmodule Programa do
       IO.puts("\nEl código '#{codigo_buscado}' no existe en el sistema o no tiene registros.")
     end
   end
-
+  
   def imprimir_reporte_r1(reporte) do
     IO.puts("\n=== R1: LOTES RECHAZADOS ===")
 
