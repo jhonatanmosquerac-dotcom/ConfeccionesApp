@@ -1,4 +1,3 @@
-
 @moduledoc """
 Validación de lotes de producción.
 Aplica cinco reglas en orden y devuelve {:ok, lote} o {:error, motivo}.
@@ -52,12 +51,12 @@ def validar_lotes(confeccionistas, lotes, lineas) do
     end
 
     #Enum,any? se encarga de preguntar si hay al menos algun elemento que cumpla una condicion
+
     defp existe_linea(id, linea) do
     Enum.any?(lineas, fn 1 -> 1.id == id)
     end
 
-    # Condicion 3 usando una verificacion de que el dato recibido sea un entero
-    y luego que ese entero este dentro de los limites
+    # Condicion 3 usando una verificacion de que el dato recibido sea un entero y luego que ese entero este dentro de los limites
 
     defp verificar_dia(dia)do
         when is_integer(dia) and dia => @dia_minimo and dia <= @dia_maximo do
@@ -104,5 +103,6 @@ def validar_lotes(confeccionistas, lotes, lineas) do
   end
 end
 
+end
 end
 end
