@@ -1,3 +1,4 @@
+# Autores: Juan Camilo, Jhonatan, Esteban
 defmodule Liquidacion do
   @moduledoc """
   Módulo de funciones puras. Se encarga de aplicar las reglas de negocio
