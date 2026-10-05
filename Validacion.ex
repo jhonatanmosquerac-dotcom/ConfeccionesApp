@@ -65,6 +65,7 @@ def validar_lotes(confeccionistas, lotes, lineas) do
     defp verificar(), do {:error, :dia_invalido}
         end
     end
+    end
 
     # Condicion 4
 
@@ -94,7 +95,7 @@ def validar_lotes(confeccionistas, lotes, lineas) do
     Enum.map(lotes, fn lote -> {lote, validar_lotes(lote, confeccionistas, lineas)}
     end)
 
-    {ok, error} = Enum.split_with(resultados, fn {_lote, r} -> match?({:ok, _}, r) end)
+    {aceptados, con_error} = Enum.split_with(resultados, fn {_lote, r} -> match?({:ok, _}, r) end)
 
     validos = Enum.map(ok, fn {lote, _} -> lote end)
     rechazados = Enum.map(error, fn {lote, {:error, motivo}} -> {lote, motivo} end)
@@ -103,6 +104,5 @@ def validar_lotes(confeccionistas, lotes, lineas) do
   end
 end
 
-end
 end
 end
