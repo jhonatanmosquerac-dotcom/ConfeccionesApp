@@ -1,3 +1,5 @@
+# Autores: Juan Camilo, Jhonatan, Esteban
+
 @moduledoc """
 Validación de lotes de producción.
 Aplica cinco reglas en orden y devuelve {:ok, lote} o {:error, motivo}.
