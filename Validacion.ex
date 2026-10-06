@@ -37,7 +37,7 @@ def validar_lotes(confeccionistas, lotes, lineas) do
 
         #Enum,any? se encarga de preguntar si hay al menos algun elemento que cumpla una condicion
     defp existe_confeccionista(codigo, confeccionistas) do
-    Enum.any?(confeccionistas, fn identificador -> identificador.codigo == codigo)
+    Enum.any?(confeccionistas, fn identificador -> identificador.codigo == codigo end)
     end
 
     # Condicion Dos, es igual a la condicion anterior solo que aqui verificamos que sea una linea la que exista
@@ -53,7 +53,7 @@ def validar_lotes(confeccionistas, lotes, lineas) do
     #Enum,any? se encarga de preguntar si hay al menos algun elemento que cumpla una condicion
 
     defp existe_linea(id, linea) do
-    Enum.any?(lineas, fn 1 -> 1.id == id)
+    Enum.any?(lineas, fn 1 -> 1.id == id end)
     end
 
     # Condicion 3 usando una verificacion de que el dato recibido sea un entero y luego que ese entero este dentro de los limites
