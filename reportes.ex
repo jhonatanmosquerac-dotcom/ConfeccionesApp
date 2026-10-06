@@ -306,6 +306,15 @@ def reporte_r8(lotes_validos, lineas) do
   end
 end
 
-
+@doc """
+  C.2: Combina el mapa de producción diaria del taller con el de un taller aliado.
+  Suma las prendas de los días que coinciden usando Map.merge/3.
+  """
+  def combinar_produccion(produccion_mi_taller, taller_aliado) do
+    # Map.merge/3 recibe los dos mapas y una función para resolver conflictos
+    Map.merge(produccion_mi_taller, taller_aliado, fn _dia, prendas_mias, prendas_aliado ->
+      prendas_mias + prendas_aliado
+    end)
+  end
 
 end

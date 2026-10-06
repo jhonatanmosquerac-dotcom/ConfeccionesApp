@@ -55,6 +55,24 @@ defmodule Programa do
     IO.puts("\n--- R8: Versatilidad (Todas las líneas) ---")
     IO.inspect(Reportes.reporte_r8(validos, lineas), pretty: true)
 
+    # --- RESOLUCIÓN C.2: COMBINAR TALLERES ---
+taller_aliado = %{1 => 550, 2 => 620, 3 => 480, 5 => 710, 7 => 200}
+
+# Convertimos la lista del R3 en un mapa simple %{dia => prendas}
+produccion_mi_taller = 
+  validos
+  |> Enum.group_by(fn lote -> lote.dia end)
+  |> Map.new(fn {dia, lotes_del_dia} ->
+    total_prendas = Enum.reduce(lotes_del_dia, 0, fn lote, acc -> acc + lote.prendas end)
+    {dia, total_prendas}
+  end)
+
+produccion_combinada = Reportes.combinar_produccion(produccion_mi_taller, taller_aliado)
+
+IO.puts("\n--- C.2: PRODUCCIÓN COMBINADA DE TALLERES ---")
+IO.inspect(produccion_combinada)
+# -----------------------------------------
+
     # 6. COMPROBANTE FINAL
     IO.puts("\n")
     pedir_comprobante(liquidaciones)
