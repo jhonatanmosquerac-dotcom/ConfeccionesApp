@@ -58,4 +58,51 @@ defmodule Liquidacion do
     valor_calculado = calcular_valor_lote(lote.prendas, lote.defectos)
     Map.put(lote, :valor, valor_calculado)
   end
+  @doc """
+  Función principal que agrupa los lotes por trabajador, usa las funciones de 
+  reglas de negocio y genera la liquidación final para cada uno.
+  """
+  def liquidar(lotes_validos, confeccionistas, _lineas) do
+    # Valoramos todos los lotes primero inyectándoles su valor en dinero
+    lotes_con_dinero = Enum.map(lotes_validos, &valorar_lote/1)
+
+    Enum.map(confeccionistas, fn trabajador ->
+      # 1. Filtramos solo los lotes de este trabajador
+      mis_lotes = Enum.filter(lotes_con_dinero, fn lote -> lote.confeccionista == trabajador.codigo end)
+
+      # 2. Agrupamos por día para poder calcular los bonos diarios y días trabajados
+      lotes_por_dia = Enum.group_by(mis_lotes, fn lote -> lote.dia end)
+      dias_trabajados = map_size(lotes_por_dia) # Cantidad de días distintos en los que entregó algo
+
+      # 3. Sumar el total de prendas
+      total_prendas = Enum.reduce(mis_lotes, 0, fn lote, acc -> acc + lote.prendas end)
+
+      # 4. Sumar el valor bruto de los lotes
+      bruto = Enum.reduce(mis_lotes, 0.0, fn lote, acc -> acc + lote.valor end)
+
+      # 5. Calcular bonificaciones (revisando día por día)
+      bonificaciones =
+        Enum.reduce(lotes_por_dia, 0.0, fn {_dia, lotes_del_dia}, acc ->
+          prendas_del_dia = Enum.reduce(lotes_del_dia, 0, fn lote, suma -> suma + lote.prendas end)
+          acc + calcular_bono_diario(prendas_del_dia)
+        end)
+
+      # 6. Calcular descuento de alquiler
+      descuento = calcular_alquiler(trabajador.alquiler, dias_trabajados)
+
+      # 7. Calcular el neto a pagar
+      neto = bruto + bonificaciones - descuento
+
+      # Devolvemos el mapa exacto que necesitan los reportes y el comprobante
+      %{
+        codigo: trabajador.codigo,
+        nombre: trabajador.nombre,
+        total_prendas: total_prendas,
+        bruto: Float.round(bruto, 2),
+        bonificaciones: Float.round(bonificaciones / 1, 2),
+        descuento_alquiler: Float.round(descuento / 1, 2),
+        neto: Float.round(neto, 2)
+      }
+    end)
+  end
 end

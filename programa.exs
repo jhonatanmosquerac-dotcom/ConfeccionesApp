@@ -7,20 +7,57 @@ defmodule Programa do
   def main do
     IO.puts("=== SISTEMA DE LIQUIDACIÓN - TALLER DE CONFECCIONES ===\n")
 
-    # 1. Pedir el lote adicional por consola (Parte B.5)
-    _lote_extra = pedir_lote_adicional()
+    # 1. Cargar la base de datos real
+    confeccionistas = Datos.confeccionistas()
+    lineas = Datos.lineas()
+    lotes_base = Datos.lotes()
 
-    # (Aquí Jhonatan validará los datos y el tercer compañero imprimirá los reportes R1 al R8)
-    IO.puts("\n[... Aquí se imprimirán los 8 reportes de tu compañero ...]\n")
+    # 2. Pedir el lote adicional por consola (Parte B.5)
+    lote_extra = pedir_lote_adicional()
 
-    # Datos falsos temporales para que puedas probar tu función de comprobante hoy mismo
-    liquidaciones_falsas = [
-      %{codigo: "C01", nombre: "Maria Elena Rios", total_prendas: 125, bruto: 394560.0, bonificaciones: 18000.0, descuento_alquiler: 30000.0, neto: 382560.0},
-      %{codigo: "C02", nombre: "Andres Salazar", total_prendas: 50, bruto: 160000.0, bonificaciones: 0.0, descuento_alquiler: 0.0, neto: 160000.0}
-    ]
+    # Sumar el lote extra a la lista si fue escrito correctamente
+    lotes_totales =
+      case lote_extra do
+        {:ok, lote} -> [lote | lotes_base]
+        _ -> lotes_base
+      end
 
-    # 2. Pedir e imprimir el comprobante individual (Parte B.5)
-    pedir_comprobante(liquidaciones_falsas)
+    # 3. VALIDACIÓN (Turno de Jhonatan)
+    {validos, rechazados} = Validacion.separar_lotes(lotes_totales, confeccionistas, lineas)
+
+    # 4. LIQUIDACIÓN (Tu turno)
+    # IMPORTANTE: Cambia "Liquidacion.liquidar" por el nombre exacto de tu función.
+    liquidaciones = Liquidacion.liquidar(validos, confeccionistas, lineas)
+
+    # 5. REPORTES (Turno de Esteban)
+    IO.puts("\n=== REPORTES DE PRODUCCIÓN ===")
+    
+    imprimir_reporte_r1(Reportes.reporte_r1(rechazados))
+
+    IO.puts("\n--- R2: Productividad por Línea ---")
+    IO.inspect(Reportes.reporte_r2(validos, lineas), pretty: true)
+
+    IO.puts("\n--- R3: Cumplimiento de Meta Diaria ---")
+    IO.inspect(Reportes.reporte_r3(validos), pretty: true)
+
+    IO.puts("\n--- R4: Ranking de Pagos Netos ---")
+    IO.inspect(Reportes.reporte_r4(liquidaciones), pretty: true)
+
+    IO.puts("\n--- R5: Liderazgo Diario ---")
+    IO.inspect(Reportes.reporte_r5(validos), pretty: true)
+
+    IO.puts("\n--- R6: Mayor Calidad (Menor % Defectos) ---")
+    IO.inspect(Reportes.reporte_r6(validos), pretty: true)
+
+    IO.puts("\n--- R7: Totales Financieros ---")
+    IO.inspect(Reportes.reporte_r7(liquidaciones, validos), pretty: true)
+
+    IO.puts("\n--- R8: Versatilidad (Todas las líneas) ---")
+    IO.inspect(Reportes.reporte_r8(validos, lineas), pretty: true)
+
+    # 6. COMPROBANTE FINAL
+    IO.puts("\n")
+    pedir_comprobante(liquidaciones)
   end
 
   def pedir_lote_adicional do
@@ -60,7 +97,6 @@ defmodule Programa do
     entrada = IO.gets("Ingrese el código del confeccionista: ")
     codigo_buscado = entrada |> String.trim() |> String.upcase()
 
-    # Buscamos en la lista usando la función pura Enum.find
     encontrado = Enum.find(liquidaciones, fn liq -> liq.codigo == codigo_buscado end)
 
     if encontrado do
@@ -79,7 +115,7 @@ defmodule Programa do
   end
   
   def imprimir_reporte_r1(reporte) do
-    IO.puts("\n=== R1: LOTES RECHAZADOS ===")
+    IO.puts("\n--- R1: LOTES RECHAZADOS ---")
 
     Enum.each(reporte.lotes, fn {lote,motivo} ->
       IO.puts("Motivo: #{motivo}")
@@ -90,9 +126,8 @@ defmodule Programa do
     IO.puts("\nCantidad de rechazos por motivo:")
 
     Enum.each(reporte.conteo, fn{motivo, cantidad} ->
-      IO.puts("Motivo: #{motivo}: #{cantidad}")
+      IO.puts("#{motivo}: #{cantidad}")
     end)
-
   end
 end
 
