@@ -77,6 +77,23 @@ defmodule Programa do
       IO.puts("\nEl código '#{codigo_buscado}' no existe en el sistema o no tiene registros.")
     end
   end
+  
+  def imprimir_reporte_r1(reporte) do
+    IO.puts("\n=== R1: LOTES RECHAZADOS ===")
+
+    Enum.each(reporte.lotes, fn {lote,motivo} ->
+      IO.puts("Motivo: #{motivo}")
+      IO.puts("Lote:")
+      IO.inspect(lote)
+    end)
+
+    IO.puts("\nCantidad de rechazos por motivo:")
+
+    Enum.each(reporte.conteo, fn{motivo, cantidad} ->
+      IO.puts("Motivo: #{motivo}: #{cantidad}")
+    end)
+
+  end
 end
 
 Programa.main()
